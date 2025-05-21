@@ -1,11 +1,12 @@
 import json
 import os
 from openai import OpenAI
-from backend.services.msg_parser import MsgParser
+from services.msg_parser import MsgParser
 import json_repair
 import re
 from bs4 import BeautifulSoup
-from backend.services.pdf_parser import PDFToStringConverter
+from services.pdf_parser import PDFToStringConverter
+from config_loader import get_config
 
 FEW_SHOT = """ПРИМЕР ИЗВЛЕЧЕНИЯ: \n\n {
     "Извлечение": {
@@ -204,15 +205,19 @@ def process_result(raw_json_str):
 
 
 def extraction(input_file):
+
+    config = get_config()
+
+
     # Обновленные настройки
     api_key = (
-        "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"
-    )
+        config.get("EXTRUCTION", "api_key")
+)
     system_prompt = "Ты - специалист отдела закупок. Твоя задача - извлечь необходимую информацию из документа. Извлекать нужно по схеме, описанной ниже. Выводи извлечение в формате JSON\n\n"
 
     # Пути к схемам
-    msg_scheme_path = "C:\\Users\\mi\\Documents\\Diplom_Ali4i4\\schemes\\scheme_for_msg.json"
-    pdf_scheme_path = "C:\\Users\\mi\\Documents\\Diplom_Ali4i4\\schemes\\scheme_for_pdf.json"
+    msg_scheme_path = config.get("EXTRUCTION", "msg_scheme_path")
+    pdf_scheme_path = config.get("EXTRUCTION", "pdf_scheme_path")
 
     # # Путь к файлу (может быть .msg или .pdf)
     # input_file = (

@@ -1,14 +1,16 @@
 import os
 import tempfile
 import time
+import configparser
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from backend.services.extraction import extraction
-from backend.services.comparation import TenderMatcher
-from backend.services.contacts_matcher import CompanyContactMatcher
+from services.extraction import extraction
+from services.comparation import TenderMatcher
+from services.contacts_matcher import CompanyContactMatcher
+from config_loader import get_config
 app = FastAPI()
 
 # Настройка CORS
@@ -20,13 +22,14 @@ app.add_middleware(
 )
 
 # Подключаем статические файлы для HTML-шаблонов
-app.mount("/static", StaticFiles(directory="frontend"), name="static")
+app.mount("/static", StaticFiles(directory="/app_f"), name="static")
 
 
 @app.get("/", response_class=HTMLResponse)
 async def index():
+    config = get_config()
     with open(
-        "C:\\Users\\mi\\Documents\\Diplom_Ali4i4\\frontend\\index.html",
+        config.get("APP", "pathToIndexHTML"),
         "r",
         encoding="utf-8",
         errors="ignore",

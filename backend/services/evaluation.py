@@ -1,15 +1,17 @@
-from backend.services.comparation import TenderMatcher
-from backend.services.extraction import extraction
+from services.comparation import TenderMatcher
+from services.extraction import extraction
+from config_loader import get_config
 import os
 import pandas as pd
 
 def evaluate():
+    config = get_config()
     matcher = TenderMatcher(db_url='postgresql://postgres:12345@localhost:5433/postgres')
     tenders_df, procurement_df = matcher.load_data()
-    true_answers = pd.read_excel("C:\\Users\\mi\\Documents\\Diplom_Ali4i4\\etalons.xlsx")
-    root_dir = "C:\\Users\\mi\\Documents\\Diplom_Ali4i4\\messages"
+    true_answers = pd.read_excel(config.get("EVALUTION", "true_answers"))
+    root_dir = config.get("EVALUTION", "root_dir")
 
-    for file_path in os.listdir("C:\\Users\\mi\\Documents\\Diplom_Ali4i4\\messages"):
+    for file_path in os.listdir(config.get("EVALUTION", "root_dir")):
         full_file_path = os.path.join(root_dir, file_path)
         # file_path = "C:\\Users\\mi\\Documents\\Diplom_Ali4i4\\messages\\FW PR №OF0000014401 Контрагент Химмед ТД ООО требует согласования - dipl.msg"
         user_data = extraction(full_file_path)  # Предположим, что extraction() возвращает данные пользователя

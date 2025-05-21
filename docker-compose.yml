@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: kuz_app
+    ports:
+      - "1488:8000"
+    restart: unless-stopped

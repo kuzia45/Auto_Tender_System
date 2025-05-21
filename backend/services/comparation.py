@@ -3,9 +3,10 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 import re
-from backend.services.extraction import extraction
-from backend.services.contacts_matcher import CompanyContactMatcher
+from services.extraction import extraction
+from services.contacts_matcher import CompanyContactMatcher
 from sqlalchemy import create_engine
+from config_loader import get_config
 
 class TenderMatcher:
     def __init__(
@@ -124,9 +125,10 @@ class TenderMatcher:
 
 # Пример использования
 if __name__ == "__main__":
+    config = get_config()
     matcher = TenderMatcher(db_url='postgresql://postgres:12345@localhost:5433/postgres')
     tenders_df, procurement_df = matcher.load_data()
-    file_path = "C:\\Users\\mi\\Documents\\Diplom_Ali4i4\\messages\\FW Кейс №21171 поступил на согласование  Case #21171 is pending approval - dipl.msg"
+    file_path = config.get("COMPARATION", "file_path")
     user_data = extraction(file_path)  # Предположим, что extraction() возвращает данные пользователя
     # kp = extraction("C:\\Users\\mi\\Documents\\Diplom_Ali4i4\\pdf_data\\2.pdf")
     processed_user_data = matcher.process_user_data(user_data)
